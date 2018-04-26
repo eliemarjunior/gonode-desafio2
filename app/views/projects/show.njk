@@ -1,0 +1,62 @@
+{% extends 'layouts/default.njk' %}
+{% block body %}
+        <div class="wrapper">
+            {% include 'partials/header.njk' %}
+
+            <section id="main">
+                <div class="container">
+                  <header>
+                    <h2>{{ project.name }}</h2>
+                    <div class="addon">
+                      <form action="/app/projects/{{ project.id }}?_method=DELETE" method="post">
+                        <button type="submit" class="btn btn-danger">Excluir projeto</button>
+                      </form>
+                    </div>
+                  </header>
+
+                  <section id="content">
+                    <nav>
+                      <div class="sessions">
+                        {% for section in sections %}
+                        <a href="/app/projects/{{ project.id }}/sections/{{ section.id }}" class="{% if section.id === currentSection.id%}active{% endif%}">{{ section.name }}</a>
+                        {% endfor %}
+                      </div>
+
+                      <form action="/app/projects/{{ project.id }}/sections/create" method="post">
+                        <input type="text" name="name" required placeholder="Nova seção">
+                        <button type="submit" class="btn"><img src="/img/plus.svg"></button>
+                      </form>
+                    </nav>
+
+                    <article>
+                      {% if currentSection !== null %}
+                        <div class="project-header">
+                          <h1>{{ currentSection.name }}</h1>
+                          <form id="frmDel" action="/app/projects/{{ project.id }}/sections/{{ currentSection.id }}?_method=DELETE" method="post">
+                          <a href="#" onclick="document.getElementById('frmDel').submit();">Remover seção</a>
+                          </form>
+                        </div>
+                        {{ currentSection.formatedDescription | safe }}
+
+                        <button type="button" onclick="document.getElementById('edit-section').style.display='block'; this.style.display='none';" class="btn">Editar Sessão</button>
+                        <div id="edit-section" style="display:none">
+                          <form action="/app/projects/{{ project.id }}/sections/{{ currentSection.id }}?_method=PUT" method="post">
+                            <input type="text" name="name" required placeholder="Editar nome" value="{{ currentSection.name }}">
+                            <textarea id="mde_description" name="description" style="width:100%" rows="8" placeholder="Editar Descrição">{{ currentSection.description }}</textarea>
+                            <button type="submit" class="btn">Alterar Descrição</button>
+                          </form>
+                          <script>
+                            var simplemde = new SimpleMDE({
+                              element: document.getElementById("mde_description"),
+                              spellChecker: false,
+                              status: false,
+                            });
+                          </script>
+                        </div>
+                      {% endif %}
+                    </article>
+                  </section>
+                </div>
+              </section>
+        </div>
+{% endblock %}
